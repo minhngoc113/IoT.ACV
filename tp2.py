@@ -1,8 +1,10 @@
-
 #Chargement les libraires
 import streamlit as st
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import plotly.express as px
+
 #cd c:\Users\APC
 #python tp2.py
 #streamlit run tp2.py
@@ -23,35 +25,25 @@ if user_name:
 uploaded_file = st.file_uploader("📁 Téléchargez un fichier CSV", type=["csv"])
 
 if uploaded_file is not None:
-    # 4. Affichage du DataFrame
+    # Affichage du DataFrame
     df = pd.read_csv(uploaded_file)
     st.subheader("🗂️ Aperçu des données")
     st.dataframe(df.head())
 
-    # Graphique en fonction du choix
-    graph_type = st.selectbox("Choissisez un type de graphique:",["Ligne","Barres","Aucun"])
-    if graph_type == "Ligne":
-        st.line_chart(df.select_dtypes(include='number'))
-    elif graph_type == "Barres":
-        st.bar_chart(df.select_dtypes(include='number'))
-    elif graph_type == "Dispersion":
-        num_cols = df.select_dtypes(include='number').columns.tolist()
-        if len(num_cols) >= 2:
-            x_axis = st.selectbox("Choisissez la variable X :", num_cols, index=0)
-            y_axis = st.selectbox("Choisissez la variable Y :", num_cols, index=1)
-            fig = px.scatter(df, x=x_axis, y=y_axis, title=f"{x_axis} vs {y_axis}")
-            st.plotly_chart(fig)
-        else:
-            st.warning("Pas assez de colonnes numériques pour un graphique de dispersion.")
 
-    else:
-        st.write("Aucun graphique sélectionné.")
 
     # Calcul et affichage des corrélations
     st.subheader("📉 Matrice de corrélation")
     corr = df.select_dtypes(include='number').corr()
     st.dataframe(corr)
 
+# Graphique des données
+if "math score" in df.columns:
+    st.subheader("📊 Histogramme des scores en mathématiques")
+    fig = px.histogram(df, x="math score", nbins=20, title="Distribution des scores en math")
+    st.plotly_chart(fig)
+else:
+    st.info("La colonne 'math score' n'existe pas dans les données.")
 
 # Affichage d’un tableau aléatoire
 if st.checkbox("📋 Afficher un tableau aléatoire"):
@@ -59,3 +51,11 @@ if st.checkbox("📋 Afficher un tableau aléatoire"):
 
 # Message de fin
 st.write("✅ Merci d'avoir utilisé notre application Streamlit !")
+
+
+
+
+
+
+
+
